@@ -1,0 +1,28 @@
+version: "3"
+services:
+  rails:
+    build: .
+    command: "bundle exec rails server -b 0.0.0.0"
+    volumes:
+      - .:/app/
+    ports:
+      - "${SERVER_PORT}:3000"
+    environment:
+      - DB_USER=${DB_USER:-root}
+      - DB_PASS=${DB_PASS:-pass}
+      - HOST=${HOST:-host.docker.internal}
+    depends_on:
+      - db
+    tty: true
+    stdin_open: true
+  db:
+    image: "postgres:11-alpine"
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_PASSWORD=${DB_PASS:-pass}
+    volumes:
+      - server_db:/var/lib/postgresql/data
+volumes:
+  server_db:
